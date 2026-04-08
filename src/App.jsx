@@ -18,9 +18,48 @@ function useInterval(callback, delay) {
 }
 
 // --- GEMINI API INTEGRATION ---
+// --- GEMINI API INTEGRATION ---
 const callGemini = async (prompt, systemInstruction = "") => {
-  const apiKey = "AIzaSyBjRAiC6xmLdDBkjtrD7i4zbFai94CwIfg";
-  const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${apiKey}`;
+  const apiKey = "AIzaSyBjRAiC6xmLdDBkjtrD7i4zbFai94CwIfg"; 
+  
+  // Using direct concatenation to prevent hidden mobile line-break errors
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=" + apiKey;
+
+  const localFallbacks = {
+    'Resource Hierarchy': "THE DIJKSTRA FIX: Think of the numbered forks like a staircase...",
+    'Arbitrator': "THE WAITER RULE: A central 'Waiter'...",
+    'Chandy-Misra': "THE CLEAN FORK LOGIC...",
+    'Semaphore Mutex': "THE STOPLIGHT..."
+  };
+
+  // Safely combining the system prompt to guarantee 100% payload compatibility
+  const safePrompt = systemInstruction ? `SYSTEM RULE: ${systemInstruction}\n\nUSER PROMPT: ${prompt}` : prompt;
+
+  const payload = {
+    contents: [{ parts: [{ text: safePrompt }] }]
+  };
+
+  try {
+    const response = await fetch(url, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify(payload)
+    });
+    
+    // If Google rejects it, extract their EXACT error message
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error?.message || `HTTP ${response.status}`);
+    }
+    
+    const data = await response.json();
+    return data.candidates?.[0]?.content?.parts?.[0]?.text || localFallbacks[systemInstruction] || "Response unavailable.";
+  } catch (error) {
+    // If a fallback exists for the table, show it. Otherwise, print the REAL error.
+    if (localFallbacks[systemInstruction]) return localFallbacks[systemInstruction];
+    return `API CONNECTION FAILED: ${error.message}`;
+  }
+};
 
 
   const localFallbacks = {
@@ -34,35 +73,7 @@ const callGemini = async (prompt, systemInstruction = "") => {
       "THE STOPLIGHT: Using a 'Mutex' (Mutual Exclusion) lock. It's like a stoplight for your code. It ensures that only one philosopher can interact with a fork at a time, preventing data corruption, but it requires careful logic to make sure the lights don't all stay red at once.",
   };
 
-  const payload = {
-    contents: [{ parts: [{ text: prompt }] }],
-    ...(systemInstruction && {
-      systemInstruction: { parts: [{ text: systemInstruction }] },
-    }),
-  };
-
-  try {
-    const response = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(payload),
-    });
-
-    if (!response.ok) throw new Error("API Error");
-
-    const data = await response.json();
-    return (
-      data.candidates?.[0]?.content?.parts?.[0]?.text ||
-      localFallbacks[systemInstruction] ||
-      "Response unavailable."
-    );
-  } catch (error) {
-    return (
-      localFallbacks[systemInstruction] ||
-      "SYSTEM FAULT: Failed to connect to the Oracle. Showing local archive data."
-    );
-  }
-};
+  
 
 // --- ASK DIJKSTRA CHAT COMPONENT ---
 function DijkstraChat({ handleMouseEnter, handleMouseLeave }) {
