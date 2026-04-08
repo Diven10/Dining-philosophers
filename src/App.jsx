@@ -19,7 +19,7 @@ function useInterval(callback, delay) {
 
 // --- GEMINI API INTEGRATION ---
 const callGemini = async (prompt, systemInstruction = "") => {
-  const apiKey = "";
+  const apiKey = "AIzaSyBjRAiC6xmLdDBkjtrD7i4zbFai94CwIfg";
   const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-preview-09-2025:generateContent?key=${apiKey}`;
 
   const localFallbacks = {
