@@ -23,7 +23,8 @@ const callGemini = async (prompt, systemInstruction = "") => {
   const apiKey = "AIzaSyBjRAiC6xmLdDBkjtrD7i4zbFai94CwIfg"; 
   
   // Using direct concatenation to prevent hidden mobile line-break errors
-  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-pro:generateContent?key=" + apiKey;
+  const url = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=" + apiKey;
+
 
 
   const localFallbacks = {
