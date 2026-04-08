@@ -1,0 +1,55 @@
+@import "tailwindcss";
+
+/* --- ANIMATIONS --- */
+@keyframes marquee {
+  0% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(-50%);
+  }
+}
+
+.animate-marquee {
+  display: inline-block;
+  white-space: nowrap;
+  animation: marquee 35s linear infinite;
+}
+
+/* --- BASE STYLES & RESET --- */
+body {
+  cursor: none;
+  background-color: #f4f4f0; /* Off-white from the video */
+  color: #111;
+  overflow-x: hidden;
+}
+
+a,
+button {
+  cursor: none;
+}
+
+/* Hide scrollbar for brutalist look */
+::-webkit-scrollbar {
+  display: none;
+}
+
+/* --- GRITTY INDIE FILTERS --- */
+/* The iconic heavy red filter from the video's hero */
+.red-monochrome {
+  filter: grayscale(100%) contrast(150%) brightness(60%);
+  mix-blend-mode: multiply;
+}
+
+/* 35mm Gritty Film Filter for the grid images */
+.gritty-film {
+  filter: grayscale(40%) contrast(140%) sepia(30%) brightness(90%);
+  transition:
+    filter 0.5s ease,
+    transform 0.7s ease;
+}
+
+.group:hover .gritty-film {
+  filter: grayscale(0%) contrast(120%) sepia(10%) brightness(100%);
+  transform: scale(1.03);
+}
